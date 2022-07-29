@@ -1,0 +1,29 @@
+<div class="row detail-page">
+	<div class="panel-heading">
+		<div class="row">
+			<div class="text-center">
+				<div class="margin-bottom-12">
+					<button type="button" class="btn btn-default" ng-disabled="curPage == 0" ng-click="curPage=curPage-1">&lt; PREV</button>
+					<span>Page {{curPage + 1}} of {{ numberOfPages() }}</span>
+					<button type="button" class="btn btn-default" ng-disabled="curPage >= originalContents.length/pageSize - 1" ng-click="curPage = curPage+1">NEXT &gt;</button>
+				</div>
+			</div>
+		</div>
+		<div class="table-responsive">
+			<table class="table table-striped">
+				<tr class="info">
+					<th><span>User Id</span></th>
+					<th><span>First and Last Name</span></th>
+					<th><span>Version</span></th>
+					<th><span>Insurance Company</span></th>
+				</tr>
+				<tr ng-repeat="fileContent in originalContents | paginationFilter: curPage * pageSize | limitTo: pageSize">
+					<td><span>{{fileContent.userId}}</span></td>
+					<td><span>{{fileContent.firstAndLastName}}</span></td>
+					<td><span>{{fileContent.version}}</span></td>
+					<td><span>{{fileContent.insuranceCompany}}</span></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
