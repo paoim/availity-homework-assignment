@@ -75,7 +75,8 @@ contentWidgetApp.controller("CustomContentController", function($scope, $route, 
 								return Math.ceil($scope.customContentList.length / $scope.pageSize);
 							};
 							$route.reload();//Reload Page
-							
+							window.location.reload();
+
 							//Hide Animation
 							$scope.$emit('UNLOADPAGE');
 						});

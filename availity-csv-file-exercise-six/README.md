@@ -10,7 +10,9 @@ Availity receives enrollment files from various benefits management and enrollme
 mvn spring-boot:run
 - http://localhost:8088/
 - You will see two pages after click on "Go To CSV Demo" button:
-Original Contents just display all contents from CSV file
-Custom Contents will display modify contents such as sort by first and last name (ascending), and remove duplicate User Ids for the same Insurance Company.
+-- Original Contents just display all contents from CSV file.
+-- Custom Contents will display modify contents such as sort by first and last name (ascending), and remove duplicate User Ids for the same Insurance Company.
 - You also can upload your own CSV file with the same format.
 - You also can download CSV file for each Insurance Company.
+
+
