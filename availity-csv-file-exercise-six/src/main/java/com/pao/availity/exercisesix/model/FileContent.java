@@ -41,6 +41,6 @@ public class FileContent implements Comparable<FileContent> {
 
 	@Override
 	public int compareTo(FileContent o) {
-		return o.getVersion() > this.getVersion() ? -1: o.getVersion() == this.getVersion() ? 0 : 1;
+		return o.getVersion() >= this.getVersion() ? 1 : -1;//highest version (Descending)
 	}
 }

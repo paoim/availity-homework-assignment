@@ -5,9 +5,12 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -75,14 +78,14 @@ public class FileContentServiceImpl implements FileContentService {
 	@Override
 	public Collection<FileContent> getAllCustomContents() {
 		List<FileContent> fileContents = new ArrayList<FileContent>();
-		Map<String, List<FileContent>> groupByInsuranceCompanyMap = groupContentByInsuranceCompany();
+		Map<String, List<FileContent>> groupByInsuranceCompanyMap = groupContentByInsuranceCompanyWithJava8();
 		for (String insuranceCompany : groupByInsuranceCompanyMap.keySet()) {
-			List<FileContent> smallFileContents = this.getAllHighestVersionWithSameUserId(insuranceCompany);
+			List<FileContent> smallFileContents = this.getAllHighestVersionWithSameUserIdWithJava8(insuranceCompany);
 			if (!smallFileContents.isEmpty()) {
+				this.sortContentsByLastAndFirstNameAssending(smallFileContents);
 				fileContents.addAll(smallFileContents);
 			}
 		}
-		this.sortContentsByLastAndFirstNameAssending(fileContents);
 		return fileContents;
 	}
 
@@ -121,6 +124,28 @@ public class FileContentServiceImpl implements FileContentService {
 		if (!fileContents.isEmpty()) {
 			Collections.sort(fileContents, new FirstAndLastNameComparator());//sort the contents of each file by last and first name (ascending)
 		}
+	}
+
+	private Map<String, List<FileContent>> groupContentByInsuranceCompanyWithJava8() {
+		Collection<FileContent> fileContents = getAllOriginalContents();
+		return fileContents.stream().collect(Collectors.groupingBy(FileContent::getInsuranceCompany));
+	}
+
+	private Map<String, FileContent> groupByUserIdWithHighestVersion(List<FileContent> fileContents) {
+		Map<String, FileContent> groupByUserIdWithHighestVersionMap = fileContents.stream().collect(Collectors.groupingBy(FileContent::getUserId, Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(FileContent::getVersion)), Optional::get)));
+		return groupByUserIdWithHighestVersionMap;
+	}
+
+	private List<FileContent> getAllHighestVersionWithSameUserIdWithJava8(String insuranceCompany) {
+		List<FileContent> fileContents = new ArrayList<FileContent>();
+		Map<String, List<FileContent>> groupByInsuranceCompanyMap = groupContentByInsuranceCompanyWithJava8();
+		if (null != groupByInsuranceCompanyMap.get(insuranceCompany)) {
+			Map<String, FileContent> groupByUserIdWithHighestVersionMap = groupByUserIdWithHighestVersion(groupByInsuranceCompanyMap.get(insuranceCompany));
+			for (String userId : groupByUserIdWithHighestVersionMap.keySet()) {
+				fileContents.add(groupByUserIdWithHighestVersionMap.get(userId));
+			}
+		}
+		return fileContents;
 	}
 
 	private Map<String, List<FileContent>> groupContentByInsuranceCompany() {
